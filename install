@@ -46,6 +46,7 @@ sudo apt-get -yqqq autoclean >/dev/null 2>&1
 sudo apt -yqqq autoremove --purge snapd >/dev/null 2>&1
 sudo ufw allow 80/tcp comment 'accept HTTP port' >/dev/null 2>&1
 sudo ufw allow 443/tcp comment 'accept HTTPS port' >/dev/null 2>&1
+sudo ufw enable >/dev/null 2>&1 # Activar UFW al final de la preparación
 clear
 
 # Instalar Docker
@@ -54,6 +55,7 @@ sudo curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh >/dev/null 2>&1
 sudo service docker start >/dev/null 2>&1
 sudo systemctl start docker >/dev/null 2>&1
+sudo systemctl enable docker >/dev/null 2>&1 # Asegurar que Docker inicie al arrancar
 clear
 
 # Instalar Traefik
@@ -96,7 +98,7 @@ services:
       - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "traefik.http.routers.api.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/" # Cambia usuario y contraseña aquí
-
+    restart: unless-stopped
     networks:
       - traefik_network
 
