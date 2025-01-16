@@ -108,16 +108,15 @@ networks:
 EOF
 
 cd /opt/traefik
-sudo docker-compose up -d
+sudo docker compose up -d
 clear
 
 # Instalar Portainer
 echo -e "\033[1;32m 4/5 Instalando Portainer... \033[0m"
+sudo mkdir -p /opt/portainer # Se crea la carpeta de portainer
 sudo docker volume create portainer_data
 
 cat << EOF | sudo tee /opt/portainer/docker-compose.yml
-version: '3.8'
-
 services:
   portainer:
     image: portainer/portainer-ce:latest
@@ -133,24 +132,24 @@ services:
       - "traefik.http.routers.portainer.tls.certresolver=myresolver"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     networks:
-      - traefik_network
+      - traefik_traefik_network
 
 volumes:
   portainer_data:
 
 networks:
-  traefik_network:
+  traefik_traefik_network:
     external: true
 EOF
 
 cd /opt/portainer
-sudo docker-compose up -d
+sudo docker compose up -d
 clear
 
 # Verificar la creación de la red traefik_network
-echo -e "\033[1;32m Verificando la creación de la red traefik_network... \033[0m"
-if ! sudo docker network inspect traefik_network >/dev/null 2>&1; then
-  echo -e "\033[1;31m Error: La red traefik_network no se creó correctamente. \033[0m"
+echo -e "\033[1;32m Verificando la creación de la red traefik_traefik_network... \033[0m"
+if ! sudo docker network inspect traefik_traefik_network >/dev/null 2>&1; then
+  echo -e "\033[1;31m Error: La red traefik_traefik_network no se creó correctamente. \033[0m"
   exit 1
 fi
 
